@@ -1,11 +1,5 @@
 server:
   port: ${PORT:8080}
-management:
-  endpoints:
-    enabled-by-default: true
-    web:
-      exposure:
-        include: "*"
 spring:
   output.ansi.enabled: DETECT
 app:
@@ -20,7 +14,6 @@ logging:
   level:
     ROOT: ${LOG_LEVEL:INFO}
     org.springframework: INFO
-    com.nosto.exchange.client: DEBUG
   pattern:
     console: '%d{yyyy-MM-dd HH:mm:ss.SSS,Europe/Moscow} %clr(%5p) [%X{traceId:-},%X{spanId:-}] %clr(${PID:- }){magenta} %clr(-){faint} %clr([%11.11t]){faint} %clr(%-32.32logger{30}){cyan} %clr(:){faint} %replace(%m){''[\n\r]'',''\\n ''} %replace(%ex){''[\r\n]'', ''\\n ''}%nopex%n'
 
@@ -28,7 +21,7 @@ feign.client.config.default:
   defaultRequestHeaders:
     apiKey:
       - ${app.exchange.api-key}
-  loggerLevel: FULL
+  loggerLevel: BASIC
 
 springdoc:
   swagger-ui:

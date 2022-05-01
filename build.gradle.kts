@@ -18,7 +18,6 @@ repositories {
 val lombokVersion = "1.18.24"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -57,6 +56,33 @@ tasks {
             showExceptions = true
             showCauses = true
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+
+            val ansiReset = "\u001B[0m"
+            val ansiGreen = "\u001B[32m"
+            val ansiRed = "\u001B[31m"
+            val ansiYellow = "\u001B[33m"
+
+            fun getColoredResultType(resultType: TestResult.ResultType): String {
+                return when (resultType) {
+                    TestResult.ResultType.SUCCESS -> "$ansiGreen $resultType $ansiReset"
+                    TestResult.ResultType.FAILURE -> "$ansiRed $resultType $ansiReset"
+                    TestResult.ResultType.SKIPPED -> "$ansiYellow $resultType $ansiReset"
+                }
+            }
+
+            afterTest(
+                KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
+                    println("${desc.className} | ${desc.displayName} : ${getColoredResultType(result.resultType)}")
+                })
+            )
+
+            afterSuite(
+                KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
+                    if (desc.parent == null) {
+                        println("Result: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)")
+                    }
+                })
+            )
         }
     }
 
