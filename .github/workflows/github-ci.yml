@@ -17,9 +17,24 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Execute Gradle build
-      - run: ./gradlew build --no-daemon
+        run: ./gradlew build --no-daemon
       - name: Tests
-      - run: ./gradlew check --no-daemon
+        run: ./gradlew check --no-daemon
+      - name: Heroku Container Registry Upload
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          heroku container:login
+          docker version
+          IMAGE_TAG=$(date +%Y%m%d%H%M%S%3N)
+          CI_REGISTRY_IMAGE=$APP_NAME:$IMAGE_TAG
+          CI_REGISTRY_IMAGE=$APP_NAME:$IMAGE_TAG
+          ./gradlew -x test jib -Djib.to.image=$CI_REGISTRY_IMAGE
+          heroku container:logout
+#      - name: Build and push
+#        env:
+#          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+#          run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} web
 #      - name: Upload
 #      - run: |
 #          docker login --username="Nikolay Kobzev" --password=9a2332a8-46bf-4bd8-b316-9efbae75100c registry.heroku.com
