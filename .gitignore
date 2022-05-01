@@ -7,8 +7,17 @@ gradle-app.setting
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
-# Cache of project
-.gradletasknamecache
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
+### gradle wrapper ###
+.gradle
+build.info
+.DS_Store
+
+### local ###
+*-local*
+docker-compose.yml

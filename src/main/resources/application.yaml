@@ -1,0 +1,29 @@
+spring:
+  output.ansi.enabled: DETECT
+app:
+  exchange:
+    url: ${EXCHANGE_API_URL:https://api.apilayer.com/exchangerates_data}
+    api-key: ${EXCHANGE_API_KEY:IiZeAPDgEqFVVcNybHiGyPcUbRqnYeHw}
+  cache:
+    ttl: ${CACHE_TTL:PT30S}
+    initial-size: ${CACHE_SIZE_INITIAL:20}
+    max-size: ${CACHE_SIZE_MAX:200}
+logging:
+  level:
+    ROOT: ${LOG_LEVEL:INFO}
+    org.springframework: INFO
+    com.nosto.exchange.client: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS,Europe/Moscow} %clr(%5p) [%X{traceId:-},%X{spanId:-}] %clr(${PID:- }){magenta} %clr(-){faint} %clr([%11.11t]){faint} %clr(%-32.32logger{30}){cyan} %clr(:){faint} %replace(%m){''[\n\r]'',''\\n ''} %replace(%ex){''[\r\n]'', ''\\n ''}%nopex%n'
+
+feign.client.config.default:
+  defaultRequestHeaders:
+    apiKey:
+      - ${app.exchange.api-key}
+  loggerLevel: FULL
+
+springdoc:
+  swagger-ui:
+    url: /openapi.yml
+    disable-swagger-default-url: true
+    path: /api/docs

@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "app.exchange.url",
+      "type": "java.lang.String",
+      "description": "Адрес сервиса конвертации."
+    },
+    {
+      "name": "app.exchange.api-key",
+      "type": "java.lang.String",
+      "description": "Ключ аутентификации."
+    }
+  ]
+}
