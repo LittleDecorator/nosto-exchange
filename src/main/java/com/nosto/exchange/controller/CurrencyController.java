@@ -21,8 +21,8 @@ public class CurrencyController {
   private final ExchangeClient client;
 
   @PostMapping("/exchange")
-  public Double getTaskTypes(@Validated @RequestBody ConvertRequestDto dto) {
-    log.info("Convert amount={} from {} to {}", dto.getValue(), dto.getSource(), dto.getTarget());
+  public Double convert(@Validated @RequestBody ConvertRequestDto dto) {
+    log.info("Convert monetary value={} from {} to {}", dto.getValue(), dto.getSource(), dto.getTarget());
     return client.convert(
       String.valueOf(dto.getValue()),
       dto.getSource(),
@@ -30,7 +30,7 @@ public class CurrencyController {
     ).getResult();
   }
 
-  @GetMapping()
+  @GetMapping
   public Map<String, String> getCurrencies() {
     log.info("Get available currencies");
     return client.getCurrencies().getSymbols();

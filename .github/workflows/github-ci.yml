@@ -5,7 +5,6 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -32,28 +31,3 @@ jobs:
           heroku_app_name: $HEROKU_APP_NAME
           heroku_email: $HEROKU_EMAIL
           usedocker: true
-#      - name: Heroku Container Registry Upload
-#        env:
-#          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-#        run: |
-##          heroku container:login
-##          docker version
-#          IMAGE_TAG=$(date +%Y%m%d%H%M%S%3N)
-#          CI_REGISTRY_IMAGE=$APP_NAME:$IMAGE_TAG
-#          ./gradlew -x test jib \
-#               -Djib.to.image=$CI_REGISTRY_IMAGE \
-#               -Djib.from.auth.username=$DOCKERHUB_USERNAME \
-#               -Djib.from.auth.username=
-#          heroku container:logout
-##      - name: Build and push
-##        env:
-##          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-##          run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} web
-##      - name: Upload
-##      - run: |
-##          docker login --username="Nikolay Kobzev" --password=9a2332a8-46bf-4bd8-b316-9efbae75100c registry.heroku.com
-##          docker version
-##          IMAGE_TAG=$(date +%Y%m%d%H%M%S%3N)
-##          CI_REGISTRY_IMAGE=$APP_NAME:$IMAGE_TAG
-##          ./gradlew -x test jib -Djib.to.image=$CI_REGISTRY_IMAGE
-##          docker logout

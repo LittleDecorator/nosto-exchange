@@ -1,13 +1,21 @@
+server:
+  port: ${PORT:8080}
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
 spring:
   output.ansi.enabled: DETECT
 app:
   exchange:
-    url: ${EXCHANGE_API_URL:https://api.apilayer.com/exchangerates_data}
-    api-key: ${EXCHANGE_API_KEY:IiZeAPDgEqFVVcNybHiGyPcUbRqnYeHw}
+    url: ${EXCHANGE_API_URL}
+    api-key: ${EXCHANGE_API_KEY}
   cache:
-    ttl: ${CACHE_TTL:PT30S}
-    initial-size: ${CACHE_SIZE_INITIAL:20}
-    max-size: ${CACHE_SIZE_MAX:200}
+    ttl: ${CACHE_TTL}
+    initial-size: ${CACHE_SIZE_INITIAL}
+    max-size: ${CACHE_SIZE_MAX}
 logging:
   level:
     ROOT: ${LOG_LEVEL:INFO}
