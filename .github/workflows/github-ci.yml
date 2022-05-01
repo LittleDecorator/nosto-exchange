@@ -1,0 +1,30 @@
+name: Exchange CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'gradle'
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Execute Gradle build
+      - run: ./gradlew build --no-daemon
+      - name: Tests
+      - run: ./gradlew check --no-daemon
+      - name: Upload
+      - run: |
+          docker login --username="Nikolay Kobzev" --password=9a2332a8-46bf-4bd8-b316-9efbae75100c registry.heroku.com
+          docker version
+          IMAGE_TAG=$(date +%Y%m%d%H%M%S%3N)
+          CI_REGISTRY_IMAGE=$APP_NAME:$IMAGE_TAG
+          ./gradlew -x test jib -Djib.to.image=$CI_REGISTRY_IMAGE
+          docker logout
