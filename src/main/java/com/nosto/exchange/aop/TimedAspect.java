@@ -20,12 +20,7 @@ public class TimedAspect {
     var start = Instant.now();
     var result = joinPoint.proceed();
     Duration d = Duration.between(start, Instant.now());
-    log.info(
-      "Operation complete and took {} min {} sec {} ms",
-      d.toMinutesPart(),
-      d.toSecondsPart(),
-      d.toMillisPart()
-    );
+    log.info("Operation complete and took {} min {} sec {} ms", d.toMinutesPart(), d.toSecondsPart(), d.toMillisPart());
     return result;
   }
 }

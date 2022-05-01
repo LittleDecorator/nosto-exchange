@@ -3,12 +3,27 @@
     {
       "name": "app.exchange.url",
       "type": "java.lang.String",
-      "description": "Адрес сервиса конвертации."
+      "description": "Exchange rates provider url."
     },
     {
       "name": "app.exchange.api-key",
       "type": "java.lang.String",
-      "description": "Ключ аутентификации."
+      "description": "Authorization api key."
+    },
+    {
+      "name": "app.cache.ttl",
+      "type": "java.time.Duration",
+      "description": "The length of time after an entry is created that it should be automatically removed."
+    },
+    {
+      "name": "app.cache.initial-size",
+      "type": "java.lang.Integer",
+      "description": "Minimum total size for the internal data structures."
+    },
+    {
+      "name": "app.cache.max-size",
+      "type": "java.lang.Long",
+      "description": "The maximum size of the cache."
     }
   ]
 }

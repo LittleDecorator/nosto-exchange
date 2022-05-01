@@ -14,7 +14,6 @@ gradle-app.setting
 *.ipr
 
 ### gradle wrapper ###
-.gradle
 build.info
 .DS_Store
 
