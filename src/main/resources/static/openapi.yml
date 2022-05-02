@@ -6,205 +6,94 @@ info:
     name: Nosto Assessment
   version: latest
 servers:
-  - url: 'https://10.242.187.35'
+  - url: 'https://nostro-exchange.herokuapp.com'
     description: Production
   - url: 'http://localhost:8080'
 tags:
-  - name: resources
+  - name: currencies
     description: Currency Convertor
 paths:
 
   /api/v1/currencies:
     get:
-      summary: Получить ресурсы команды
-      operationId: getTeamResources
+      summary: Get available currencies
+      operationId: getCurrencies
       tags:
-        - resources
-      parameters:
-        - in: path
-          name: teamType
-          required: true
-          schema:
-            $ref: '#/components/schemas/TeamType'
-        - in: path
-          required: true
-          name: teamId
-          schema:
-            type: integer
-            format: int64
-            description: Идентификатор команды в системе
-        - in: path
-          name: environment
-          required: true
-          schema:
-            $ref: '#/components/schemas/EnvType'
+        - currencies
       responses:
-        404:
-          description: Команда не найдена.
         200:
-          description: Все ресурсы команды в виде json.
+          description: Available currencies obtained.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamResourcesDto'
+                $ref: '#/components/schemas/CurrencyResponseDto'
+        401:
+          description: No valid API key provided.
+        429:
+          description: API request limit exceeded. See section Rate Limiting for more info.
+        500:
+          description: Target service have failed to process request.
 
   /api/v1/currencies/exchange:
     post:
-      summary: Инициализация команды с минимальным набором ресурсов.
-      operationId: createResources
+      summary: Convert monetary value.
+      operationId: convert
       tags:
-        - resources
-      parameters:
-        - $ref: '#/components/parameters/host'
+        - currencies
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateResourcesHomeRequestDto'
+              $ref: '#/components/schemas/ConvertRequestDto'
       responses:
         200:
-          description: Resource creation response
+          description: Currency successfully converted
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/CreateResourcesResponseDto'
+              example: 0.837208
         400:
-          description: The problem is in the query parameters
-        415:
-          description: The specified request MediaType is not supported
-        404:
-          description: The requested resource is not found
+          description: The request was unacceptable, often due to missing a required parameter.
+        401:
+          description: No valid API key provided.
+        429:
+          description: API request limit exceeded. See section Rate Limiting for more info.
         500:
-          description: Internal service error happen. Please inform responsible team
+          description: Target service have failed to process request.
 
 components:
 
   schemas:
 
-    CreateResourcesHomeRequestDto:
+    ConvertRequestDto:
       type: object
       required:
-        - environment
-        - ip_adress
-        - teamId
-        - teamName
-        - teamContact
-        - applicationName
-        - owner
-        - ownerDelegate
-        - weaklySizeGb
+        - value
+        - source
+        - target
       properties:
-        environment:
-          description: 'Среда на которую необходимо осуществить подключение команды'
-          default: 'PREVIEW'
-          allOf:
-            - $ref: "#/components/schemas/EnvType"
-        ip_adress:
-          type: array
-          description: 'Адреса всех хостов, которым будет выдан доступ на запись данных в топик Kafka команды'
-          example: [ 10.243.178.17, 10.243.178.47 ]
-          items:
-            type: "string"
-        team_id:
-          type: integer
-          description: 'ID команды с портала home'
-          example: 193
-        team_name:
+        value:
+          type: number
+          description: 'A monetary value'
+          example: 1.0
+        source:
           type: string
-          maxLength: 35
-          description: 'Имя команды указанное на портале home'
-          example: 'Backend Tools'
-        shortTeamName:
+          description: 'A source currency'
+          example: 'EUR'
+        target:
           type: string
-          maxLength: 35
-          description: 'Краткое имя команды. Если передано, то будет использовано для формирования имени роли и группы в AD'
-          example: 'dev4dev'
-        team_contact:
-          type: string
-          description: 'Адрес почты-рассылки команды'
-          example: 'backend-tools@raiffeisen.ru'
-        application_name:
-          type: string
-          description: 'Имя подключаемого приложения команды для правил маршрутизации'
-          example: 'elk-controller'
-        owner:
-          type: string
-          description: 'Владалец новой роли'
-          example: 'ruakpsj'
-        owner_delegate:
-          type: string
-          description: 'Заместитель владельца новой роли'
-          example: 'ruamevb'
-        weakly_size_gb:
-          type: integer
-          description: 'Предполагаемый недельный объем данных'
-          example: 10
+          description: 'A target currency'
+          example: 'GBP'
 
-    CreateResourcesResponseDto:
-      type: object
-      required:
-        - requestId
-        - requestType
-        - status
-      properties:
-        requestId:
-          type: string
-          description: 'Идентификатор запроса на создание ресурсов'
-          example: 2943ddef-fd79-4460-9dee-4d3a3636e72d
-        requestType:
-          $ref: '#/components/schemas/RequestType'
-        status:
-          $ref: '#/components/schemas/RequestStatus'
-
-    TeamResourcesDto:
+    CurrencyResponseDto:
       type: object
       properties:
-        teamId:
-          type: integer
-          description: 'Идентификатор команды'
-        blocked:
-          type: boolean
-          description: Признак блокировки команды
-        envLocked:
-          type: boolean
-          description: Признак блокировки окружения команды
-        envLockReason:
+        GBP:
           type: string
-          description: Причина блокировки окружения команды
-          example: Team enviroment is locked due to exception
-        applications:
-          type: array
-          items:
-            $ref: "#/components/schemas/ApplicationDto"
-        kafkaTopics:
-          type: array
-          items:
-            $ref: '#/components/schemas/KafkaTopicDto'
-        kibanaRoles:
-          type: array
-          items:
-            $ref: '#/components/schemas/KibanaRoleDto'
-        kibanaSpaces:
-          type: array
-          items:
-            $ref: '#/components/schemas/KibanaSpaceDto'
-        elasticIndexes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ElasticIndexDto'
-
-    AddQueryToRoleRequestDto:
-      type: object
-      required:
-        - query
-        - indexName
-      properties:
-        query:
+          example: 'British Pound Sterling'
+        EUR:
           type: string
-          description: Значение query, представленное в виде строки. <br/><b>NOTE:</b> Любые спецсимволы должны быть экранированы (ожидаем в формате \" и \n)
-          example: '{"bool":{"should":[{"match_phrase":{"service.name":"153-csp-deals-deals"}},{"match_phrase":{"service.name":"153-csp-deals-calculator"}}],"minimum_should_match":1}}'
-        indexName:
+          example: 'Euro'
+        USD:
           type: string
-          description: Маска индекса, к которому предоставляется доступ для роли через query.
-          example: 'backendtools-*'
+          example: 'United States Dollar'

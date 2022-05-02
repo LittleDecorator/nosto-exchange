@@ -1,6 +1,5 @@
 plugins {
     java
-    id("com.google.cloud.tools.jib") version "3.1.4"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.springframework.boot") version "2.5.12"
     id("checkstyle")
@@ -45,30 +44,6 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
-jib {
-    from {
-        image = "openjdk-11-jre:slim"
-        auth {
-            username = "Nikolay Kobzev"
-            password = "9a2332a8-46bf-4bd8-b316-9efbae75100c"
-        }
-    }
-    to {
-        image = "nosto-exchange:local"
-        auth {
-            username = "Nikolay Kobzev"
-            password = "9a2332a8-46bf-4bd8-b316-9efbae75100c"
-        }
-    }
-    container {
-        user = "1001:1001"
-        jvmFlags = listOf(
-            "-Dfile.encoding=UTF-8",
-            "-Dclient.encoding.override=UTF-8"
-        )
-    }
-}
-
 tasks {
     withType<JavaCompile> {
         sourceCompatibility = "${JavaVersion.VERSION_11}"
@@ -81,6 +56,33 @@ tasks {
             showExceptions = true
             showCauses = true
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+
+            val ansiReset = "\u001B[0m"
+            val ansiGreen = "\u001B[32m"
+            val ansiRed = "\u001B[31m"
+            val ansiYellow = "\u001B[33m"
+
+            fun getColoredResultType(resultType: TestResult.ResultType): String {
+                return when (resultType) {
+                    TestResult.ResultType.SUCCESS -> "$ansiGreen $resultType $ansiReset"
+                    TestResult.ResultType.FAILURE -> "$ansiRed $resultType $ansiReset"
+                    TestResult.ResultType.SKIPPED -> "$ansiYellow $resultType $ansiReset"
+                }
+            }
+
+            afterTest(
+                KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
+                    println("${desc.className} | ${desc.displayName} : ${getColoredResultType(result.resultType)}")
+                })
+            )
+
+            afterSuite(
+                KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
+                    if (desc.parent == null) {
+                        println("Result: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)")
+                    }
+                })
+            )
         }
     }
 
